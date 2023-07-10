@@ -1,0 +1,25 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'no-overlap-check'
+    tags:
+  pull_request:
+
+
+jobs:
+  build_and_archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: build
+        run: make build
+      - name: create binary
+        run: make binary
+      - name: Archive binary artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-bundles
+          path: ./bundles
+
