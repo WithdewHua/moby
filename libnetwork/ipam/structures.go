@@ -94,28 +94,30 @@ func (aSpace *addrSpace) allocateSubnet(nw, sub netip.Prefix) error {
 	aSpace.Lock()
 	defer aSpace.Unlock()
 
-	// Check if already allocated
-	if pool, ok := aSpace.subnets[nw]; ok {
-		var childExists bool
-		if sub != (netip.Prefix{}) {
-			_, childExists = pool.children[sub]
-		}
-		if sub == (netip.Prefix{}) || childExists {
-			// This means the same pool is already allocated. allocateSubnet is called when there
-			// is request for a pool/subpool. It should ensure there is no overlap with existing pools
-			return ipamapi.ErrPoolOverlap
-		}
-	}
-
+	// // Check if already allocated
+	// if pool, ok := aSpace.subnets[nw]; ok {
+	// 	var childExists bool
+	// 	if sub != (netip.Prefix{}) {
+	// 		_, childExists = pool.children[sub]
+	// 	}
+	// 	if sub == (netip.Prefix{}) || childExists {
+	// 		// This means the same pool is already allocated. allocateSubnet is called when there
+	// 		// is request for a pool/subpool. It should ensure there is no overlap with existing pools
+	// 		// return ipamapi.ErrPoolOverlap
+	//             aSpace.incRefCount(pool, 1)
+	//             return func() error { return nil }, nil
+	// 	}
+	// }
+	//
 	return aSpace.allocateSubnetL(nw, sub)
 }
 
 func (aSpace *addrSpace) allocateSubnetL(nw, sub netip.Prefix) error {
 	// If master pool, check for overlap
 	if sub == (netip.Prefix{}) {
-		if aSpace.contains(nw) {
-			return ipamapi.ErrPoolOverlap
-		}
+		// if aSpace.contains(nw) {
+		// 	return ipamapi.ErrPoolOverlap
+		// }
 		// This is a new master pool, add it along with corresponding bitmask
 		aSpace.subnets[nw] = newPoolData(nw)
 		return nil
